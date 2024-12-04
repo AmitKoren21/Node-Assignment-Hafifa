@@ -64,9 +64,15 @@ router.put("/:id", async (req, res) => {
 
 router.delete("/:id", async (req, res) => {
   try {
-    await Task.destroy({ where: { id: req.params.id } });
+    const taskResponse = await getTaskById(req.params.id);
 
-    res.status(200).json(`task with id ${req.params.id} deleted`);
+    if (!(taskResponse instanceof Model)) {
+      res.status(404).json(taskResponse);
+    } else {
+      await Task.destroy({ where: { id: req.params.id } });
+
+      res.status(200).json(`task with id ${req.params.id} deleted`);
+    }
   } catch (err) {
     console.log(err);
   }

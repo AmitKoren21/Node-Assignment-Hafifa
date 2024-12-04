@@ -69,9 +69,15 @@ router.put("/:id", async (req, res) => {
 
 router.delete("/:id", async (req, res) => {
   try {
-    await User.destroy({ where: { id: req.params.id } });
+    const userResponse = await getUserById(req.params.id);
 
-    res.status(200).json(`user with id ${req.params.id} deleted`);
+    if (!(userResponse instanceof Model)) {
+      res.status(404).json(userResponse);
+    } else {
+      await User.destroy({ where: { id: req.params.id } });
+
+      res.status(200).json(`user with id ${req.params.id} deleted`);
+    }
   } catch (err) {
     console.log(err);
   }
